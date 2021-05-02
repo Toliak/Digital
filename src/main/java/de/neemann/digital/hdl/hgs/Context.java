@@ -707,6 +707,9 @@ public class Context implements HGSMap {
         public Object call(Context c, ArrayList<Expression> args) throws HGSEvalException {
             File f = new File(args.get(0).value(c).toString());
             f = new FileLocator(f).setLibraryRoot(c.getRootPath()).locate();
+            File root = c.getRootPath();
+            if (root != null)
+                f = new FileLocator(f).setLibraryRoot(root).locate();
             try {
                 return Application.readCode(f);
             } catch (IOException e) {

@@ -5,6 +5,7 @@
  */
 package de.neemann.digital.core.memory;
 
+import de.neemann.digital.FileLocator;
 import de.neemann.digital.core.*;
 import de.neemann.digital.core.element.Element;
 import de.neemann.digital.core.element.ElementAttributes;
@@ -24,6 +25,10 @@ import static de.neemann.digital.core.element.PinInfo.input;
  * A ROM module.
  */
 public class ROM extends Node implements Element, ROMInterface, ProgramMemory {
+    /**
+     * Key used to store the source file in the attribute set
+     */
+    public final static String LAST_DATA_FILE_KEY = "lastDataFile";
 
     /**
      * The ROMs {@link ElementTypeDescription}
@@ -47,9 +52,9 @@ public class ROM extends Node implements Element, ROMInterface, ProgramMemory {
     private final ObservableValue output;
     private final int addrBits;
     private final int dataBits;
+    private final File hexFile;
     private final boolean autoLoad;
     private final boolean isProgramMemory;
-    private final ElementAttributes attr;
     private final String label;
     private ObservableValue addrIn;
     private ObservableValue selIn;
@@ -67,10 +72,10 @@ public class ROM extends Node implements Element, ROMInterface, ProgramMemory {
         data = attr.get(Keys.DATA);
         addrBits = attr.get(Keys.ADDR_BITS);
         autoLoad = attr.get(Keys.AUTO_RELOAD_ROM);
-        if (autoLoad)
-            this.attr = attr;
-        else
-            this.attr = null;
+        if (autoLoad) {
+            hexFile = attr.getFile(LAST_DATA_FILE_KEY);
+        } else
+            hexFile = null;
         label = attr.getLabel();
         isProgramMemory = attr.isProgramMemory();
         formatter = attr.getValueFormatter();
@@ -114,10 +119,10 @@ public class ROM extends Node implements Element, ROMInterface, ProgramMemory {
     @Override
     public void init(Model model) throws NodeException {
         if (autoLoad) {
-            if (attr == null)
+            if (hexFile == null)
                 throw new NodeException(Lang.get("err_ROM_noFileGivenToLoad"), this, -1, null);
             try {
-                File f = attr.getFile(Keys.LAST_DATA_FILE, model.getRootPath());
+                File f = new FileLocator(hexFile).setLibraryRoot(model.getRootPath()).locate();
                 data = Importer.read(f, dataBits);
             } catch (IOException e) {
                 throw new NodeException(e.getMessage(), this, -1, null);

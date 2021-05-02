@@ -767,7 +767,10 @@ public final class EditorFactory {
                         if (app != null) {
                             try {
                                 getAttributeDialog().storeEditedValues();
-                                File root = getAttributeDialog().getRootFile();
+                                File root = null;
+                                Main main = getAttributeDialog().getMain();
+                                if (main != null)
+                                    root = main.getLibrary().getRootFilePath();
                                 final boolean consistent = app.ensureConsistency(elementAttributes, root);
                                 if (consistent)
                                     getAttributeDialog().updateEditedValues();
