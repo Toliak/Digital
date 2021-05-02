@@ -19,10 +19,7 @@
     <string name="btn_edit">Bearbeiten</string>
     <string name="btn_editFurther">Weiter bearbeiten</string>
     <string name="btn_load">Laden</string>
-    <string name="btn_reload">Neu Laden</string>
-    <string name="btn_reload_tt">Letzte Datei noch einmal laden</string>
     <string name="btn_save">Speichern</string>
-    <string name="btn_saveAsHex_tt">Als HEX-Datei speichern.</string>
     <string name="btn_create">Erzeugen</string>
     <string name="btn_create_tt">Erzeugt eine Schaltung in einem eigenen Fenster.</string>
     <string name="btn_editDetached">Permanent Bearbeiten</string>
@@ -1323,6 +1320,8 @@ Sind evtl. die Namen der Variablen nicht eindeutig?</string>
     <string name="key_Height_tt">Höhe des Symbols, wenn diese Schaltung in eine andere eingefügt wird.</string>
     <string name="key_autoReload">Bei jedem Start automatisch neu laden.</string><!-- ROM -->
     <string name="key_autoReload_tt">Lädt das HEX-File bei jedem Modelstart neu.</string>
+    <string name="key_lastDataFile">Datei</string>
+    <string name="key_lastDataFile_tt">Datei die in das ROM geladen wird!</string>
     <string name="key_flipSelPos">Tausche Selektorposition</string><!-- Driver, DriverInvSel, Multiplexer, Demultiplexer, Decoder -->
     <string name="key_flipSelPos_tt">Mit dieser Option kann der Anschluss des Selektors auf die andere Seite des Multiplexers verschoben werden.</string>
     <string name="key_intFormat">Zahlenformat</string><!-- Probe -->
@@ -1658,6 +1657,13 @@ Sind evtl. die Namen der Variablen nicht eindeutig?</string>
     <string name="key_trigger_falling">fallende Flanke</string>
     <string name="key_trigger_both">beide Flanken</string>
 
+    <string name="key_probeMode">Anzeigemodus</string>
+    <string name="key_probeMode_tt">Legt fest, ob der Wert oder ein Zähler angezeigt werden soll.</string>
+    <string name="key_probeMode_VALUE">zeige Wert</string>
+    <string name="key_probeMode_UP">Zähle steigende Flanken</string>
+    <string name="key_probeMode_DOWN">Zähle fallende Flanken</string>
+    <string name="key_probeMode_BOTH">Zähle beide Flanken</string>
+
     <string name="key_colorScheme">Farbschema</string>
     <string name="key_colorScheme_DEFAULT">Normal</string>
     <string name="key_colorScheme_DARK">Dunkel</string>
@@ -1717,6 +1723,9 @@ Sind evtl. die Namen der Variablen nicht eindeutig?</string>
     <string name="lib_more">mehr</string>
     <string name="lib_ram">RAM</string>
     <string name="lib_eeprom">EEPROM</string>
+    <string name="lib_decoration">Dekoration</string>
+    <string name="lib_generic">Generisch</string>
+    <string name="lib_hdl">VHDL/Verilog</string>
 
     <string name="cli_cli">Steuerung per Kommandozeile</string>
     <string name="cli_nonOptionalArgumentMissing_N">Es fehlt das nicht optionale Argument {0}.</string>
@@ -1739,6 +1748,7 @@ Sind evtl. die Namen der Variablen nicht eindeutig?</string>
         Testfall definiert sind. Dies kann sinnvoll sein, wenn es mehrere mögliche Lösungen gibt, die von
         verschiedenen Eingängen abhängig sein können.
     </string>
+    <string name="cli_help_test_verbose">Wenn gesetzt, wird im Fehlerfall die Wertetabelle ausgegeben.</string>
     <string name="cli_thereAreTestFailures">Es sind Tests fehlgeschlagen.</string>
     <string name="cli_errorExecutingTests">Es ist ein Fehler bei der Ausführung der Tests aufgetreten.</string>
 
@@ -1765,6 +1775,7 @@ Sind evtl. die Namen der Variablen nicht eindeutig?</string>
     <string name="menu_analyse_tt">Analyse der aktuellen Schaltung</string>
     <string name="menu_cut">Ausschneiden</string>
     <string name="menu_copy">Kopieren</string>
+    <string name="menu_copy_tt">In die Zwischenablage kopieren</string>
     <string name="menu_custom">Benutzerdefiniert</string>
     <string name="menu_library">Bibliothek</string>
     <string name="menu_delete">Löschen</string>

@@ -23,9 +23,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -40,8 +38,11 @@ import java.util.StringTokenizer;
  */
 public class DataEditor extends JDialog {
     private static final Color MYGRAY = new Color(230, 230, 230);
+    private static File lastUsedFileName;
     private final ValueFormatter addrFormat;
+    private final ValueFormatter dataFormat;
     private final int addrBits;
+    private final int dataBits;
     private final DataField localDataField;
     private final JTable table;
     private boolean ok = false;
@@ -63,6 +64,8 @@ public class DataEditor extends JDialog {
         super(SwingUtilities.windowForComponent(parent), Lang.get("key_Data"), modelIsRunning ? ModalityType.MODELESS : ModalityType.APPLICATION_MODAL);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.addrBits = addrBits;
+        this.dataBits = dataBits;
+        this.dataFormat = dataFormat;
         if (dataFormat.isSuitedForAddresses())
             addrFormat = dataFormat;
         else
@@ -144,11 +147,10 @@ public class DataEditor extends JDialog {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JFileChooser fc = new MyFileChooser();
-                    if (fileName != null)
-                        fc.setSelectedFile(fileName);
+                    setFileNameTo(fc);
                     fc.setFileFilter(new FileNameExtensionFilter("hex", "hex"));
                     if (fc.showOpenDialog(DataEditor.this) == JFileChooser.APPROVE_OPTION) {
-                        fileName = fc.getSelectedFile();
+                        setFileName(fc.getSelectedFile());
                         try {
                             DataField dataRead = Importer.read(fc.getSelectedFile(), dataBits)
                                     .trimValues(addrBits, dataBits);
@@ -164,12 +166,11 @@ public class DataEditor extends JDialog {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JFileChooser fc = new MyFileChooser();
-                    if (fileName != null)
-                        fc.setSelectedFile(fileName);
+                    setFileNameTo(fc);
                     fc.setFileFilter(new FileNameExtensionFilter("hex", "hex"));
                     new SaveAsHelper(DataEditor.this, fc, "hex").checkOverwrite(
                             file -> {
-                                fileName = fc.getSelectedFile();
+                                setFileName(file);
                                 localDataField.saveTo(file);
                             }
                     );
@@ -194,6 +195,17 @@ public class DataEditor extends JDialog {
                 }
             }
         }.setAcceleratorCTRLplus('V').enableAcceleratorIn(table);
+
+        new ToolTipAction(Lang.get("menu_copy")) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] rows = table.getSelectedRows();
+                if (rows.length > 0) {
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(new StringSelection(((MyTableModel) table.getModel()).toString(rows)), null);
+                }
+            }
+        }.setAcceleratorCTRLplus('C').enableAcceleratorIn(table);
 
         pack();
         if (getWidth() < 150)
@@ -266,14 +278,17 @@ public class DataEditor extends JDialog {
      * @param fileName the filename
      */
     public void setFileName(File fileName) {
-        this.fileName = fileName;
+        if (fileName.exists()) {
+            this.fileName = fileName;
+            lastUsedFileName = fileName;
+        }
     }
 
-    /**
-     * @return the file name last used
-     */
-    public File getFileName() {
-        return fileName;
+    private void setFileNameTo(JFileChooser fc) {
+        if (fileName != null)
+            fc.setSelectedFile(fileName);
+        else if (lastUsedFileName != null)
+            fc.setSelectedFile(lastUsedFileName);
     }
 
     /**
@@ -374,6 +389,20 @@ public class DataEditor extends JDialog {
                 // only one value has changed
                 fireEvent(new TableModelEvent(this, addr / cols));
             }
+        }
+
+        public String toString(int[] rows) {
+            StringBuilder sb = new StringBuilder();
+            for (int r : rows) {
+                int offs = r * cols;
+                sb.append(addrFormat.formatToEdit(new Value(offs, addrBits)));
+                for (int c = 0; c < cols; c++) {
+                    long val = dataField.getDataWord(offs + c);
+                    sb.append("\t").append(dataFormat.formatToEdit(new Value(val, dataBits)));
+                }
+                sb.append(System.lineSeparator());
+            }
+            return sb.toString();
         }
     }
 
